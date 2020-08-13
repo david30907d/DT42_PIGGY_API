@@ -19,6 +19,7 @@ RUN poetry install --no-interaction --no-ansi --no-dev \
     && rm -rf /tmp/* /var/cache/apk/*
 
 COPY project project
+COPY tests tests
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY docker-entrypoint.sh docker-entrypoint.sh
 EXPOSE 8000

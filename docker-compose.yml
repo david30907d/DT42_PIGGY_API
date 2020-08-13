@@ -4,8 +4,10 @@ services:
         image: mysql:8.0.20
         volumes:
             - ./fixtures:/tmp/tests/fixtures
+        environment:
+            - MYSQL_ROOT_PASSWORD=mysql
     api:
-        image: project
+        build: .
         restart: always
         depends_on:
             - mysql

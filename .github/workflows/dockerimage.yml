@@ -5,6 +5,8 @@ on:
     branches: [ master ]
   pull_request:
     branches: [ master ]
+env:
+  RC_NAME: davidtnfsh/DT42_PIGGY_API
 
 jobs:
 
@@ -14,5 +16,50 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
-    - name: Bｚuild the Docker image
-      run: docker build . --file Dockerfile --tag my-image-name:$(date +%s)
+    - name: Login to docker hub
+      uses: actions-hub/docker/login@master
+      env:
+        DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
+        DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+    - name: Pull cache
+      run: |
+        docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
+        docker pull ${RC_NAME}:cache
+
+    - name: Build the Docker image
+      if: always()
+      run: |
+        docker build . --file Dockerfile --tag ${RC_NAME}:${GITHUB_SHA}
+        docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:cache
+
+    - name: Docker-compose
+      run: docker-compose up -d
+
+    - name: Run test
+      run: |
+        docker-compose exec api sh -c "pip install pytest; pytest"
+        [ $? -eq 0 ] || exit 1
+
+    - name: Push Cache to docker registry
+      uses: actions-hub/docker@master
+      if: always()
+      with:
+        args: push ${RC_NAME}:cache
+
+    - name: Push GITHUB_SHA to docker registry
+      uses: actions-hub/docker@master
+      if: always()
+      with:
+        args: push ${RC_NAME}:${GITHUB_SHA}
+
+    - name: Push staging to docker registry
+      uses: actions-hub/docker@master
+      if: github.ref == 'refs/heads/master' && success()
+      with:
+        args: push ${RC_NAME}:staging
+
+    - name: Push prod version to docker registry
+      uses: actions-hub/docker@master
+      if: github.ref == 'refs/heads/prod' && success()
+      with:
+        args: push ${RC_NAME}:latest
