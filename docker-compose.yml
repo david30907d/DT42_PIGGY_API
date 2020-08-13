@@ -1,0 +1,13 @@
+version: '3'
+services:
+    mysql:
+        image: mysql:8.0.20
+        volumes:
+            - ./fixtures:/tmp/tests/fixtures
+    api:
+        image: project
+        restart: always
+        depends_on:
+            - mysql
+        ports:
+            - "8000:8000"
