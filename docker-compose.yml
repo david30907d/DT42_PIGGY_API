@@ -3,7 +3,7 @@ services:
     mysql:
         image: mysql:8.0.20
         volumes:
-            - ./fixtures:/tmp/tests/fixtures
+            - ./fixtures:/tmp
         environment:
             - MYSQL_ROOT_PASSWORD=mysql
     api:

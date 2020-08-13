@@ -37,6 +37,7 @@ jobs:
 
     - name: Run test
       run: |
+        docker-compose exec mysql sh -c "mysql -u root --password=mysql -D mysql -e "source /tmp/init.sql""
         docker-compose exec api sh -c "pip install pytest; pytest"
         [ $? -eq 0 ] || exit 1
 
