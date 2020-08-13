@@ -6,7 +6,7 @@ on:
   pull_request:
     branches: [ master ]
 env:
-  RC_NAME: davidtnfsh/DT42_PIGGY_API
+  RC_NAME: davidtnfsh/dt42_piggy_api
 
 jobs:
 
