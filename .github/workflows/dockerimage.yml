@@ -7,20 +7,33 @@ on:
     branches: [ master ]
 env:
   RC_NAME: davidtnfsh/dt42_piggy_api
+  POETRY_VIRTUALENVS_CREATE: false
 
 jobs:
 
   build:
 
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-16.04
+    services:
+      mysql:
+        image: mysql:8.0.20
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+        ports:
+        - 3306:3306
 
     steps:
     - uses: actions/checkout@v2
+    - name: Set up Python 3.7
+      uses: actions/setup-python@v1
+      with:
+        python-version: 3.7
     - name: Login to docker hub
       uses: actions-hub/docker/login@master
       env:
         DOCKER_USERNAME: ${{ secrets.DOCKER_USERNAME }}
         DOCKER_PASSWORD: ${{ secrets.DOCKER_PASSWORD }}
+
     - name: Pull cache
       run: |
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
@@ -29,18 +42,27 @@ jobs:
     - name: Build the Docker image
       if: always()
       run: |
-        docker build . --file Dockerfile --tag ${RC_NAME}:${GITHUB_SHA}
+        docker build -t ${RC_NAME}:${GITHUB_SHA} --cache-from ${RC_NAME}:cache .
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:cache
-
-    - name: Docker-compose
-      run: docker-compose up -d
+        docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:staging
+        docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:latest
 
     - name: Run test
       run: |
-        docker-compose exec mysql sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/stored_procedures.sql"'
-        docker-compose exec mysql sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/init.sql"'
-        docker-compose exec api sh -c "pip install pytest; pytest"
-        [ $? -eq 0 ] || exit 1
+        # Because the malfunction of MySQL in Github action
+        # We're commenting these mysql setup process for now!
+        # mysql -u root --password=mysql -D mysql -e "source fixtures/stored_procedures.sql"
+        # mysql -u root --password=mysql -D mysql -e "source fixtures/init.sql"
+
+        # Docker-compose version
+        # docker exec -i dt42_piggy_api_mysql_1 sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/stored_procedures.sql"'
+        # docker exec -i dt42_piggy_api_mysql_1 sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/init.sql"'
+        # docker exec -i dt42_piggy_api_api_1 sh -c "pip install pytest; pytest"
+
+        python -m pip install --upgrade pip
+        pip install poetry
+        poetry install
+        pytest
 
     - name: Push Cache to docker registry
       uses: actions-hub/docker@master

@@ -3,7 +3,7 @@ FROM python:3.7.6-alpine3.11
 ENV POETRY_VIRTUALENVS_CREATE=false \
     POETRY_CACHE_DIR='/var/cache/pypoetry'
 
-RUN apk --update --no-cache add gcc=9.2.0-r4 g++=9.2.0-r4 git=2.24.3-r0 nginx=1.16.1-r6 libffi-dev=3.2.1-r6 openssl-dev=1.1.1g-r0 \
+RUN apk --update --no-cache add gcc g++ git nginx libffi-dev openssl-dev \
     # 1. if you don't need postgres, remember to remove postgresql-dev and sqlalchemy
     # 2. libffi-dev, openssl-dev is required by poetry
     && pip install --no-cache-dir poetry==1.0.5
