@@ -55,9 +55,9 @@ jobs:
         # mysql -u root --password=mysql -D mysql -e "source fixtures/init.sql"
 
         # Docker-compose version
-        # docker exec -i dt42_piggy_api_mysql_1 sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/stored_procedures.sql"'
-        # docker exec -i dt42_piggy_api_mysql_1 sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/init.sql"'
-        # docker exec -i dt42_piggy_api_api_1 sh -c "pip install pytest; pytest"
+        # docker-compose exec mysql sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/stored_procedures.sql"'
+        # docker-compose exec mysql sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/init.sql"'
+        # docker-compose exec api sh -c "pip install pytest; pytest"
 
         python -m pip install --upgrade pip
         pip install poetry
