@@ -21,13 +21,28 @@ This API would connect MySQL and BerryNet inference with Dashboard.
 
 ## API
 
-1. Health probe:
-    * URI: `curl -XGET localhost:8000/settings`
+### Settings
+
+* Health probe: `curl -XGET localhost:<port>/settings`
     * Response: `ok`
-2. Save `settings.json` as local file:
-    * URI `curl -XPOST -H "Content-Type: application/json" localhost:8000/settings -d '{"payload":{"placeholder": ""}, "filepath": "./"}'`
+* Save `settings.json` as local file: `curl -XPOST -H "Content-Type: application/json" localhost:<port>/settings -d '{"payload":{"placeholder": ""}, "filepath": "./"}'`
     * Response: No Response
 
+### Dashboard
+
+* Get records for dashboard: `curl -XGET localhost:<port>/dashboard`
+    * Response:
+    ```json
+    [
+        {
+            "ID": 1,
+            "COMPRESSION": "jpeg",
+            "CHANNEL": 0,
+            "TIMESTAMP": "2020-08-14 04:12:50",
+            "ANNOTATIONS": "[{\"top\": 100, \"left\": 50, \"type\": \"detection\", \"label\": \"person\", \"right\": 128, \"bottom\": 200, \"confidence\": 0.93}]"
+        }
+    ]
+    ```
 ## Test
 
 Please check [.github/workflows/dockerimage.yml](.github/workflows/dockerimage.yml) for details
