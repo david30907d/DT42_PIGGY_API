@@ -26,7 +26,7 @@ This API would connect MySQL and BerryNet inference with Dashboard.
 * Health probe: `curl -XGET localhost:<port>/settings`
     * Response: `ok`
 * Save `settings.json` as local file: `curl -XPOST -H "Content-Type: application/json" localhost:<port>/settings -d '{"payload":{"placeholder": ""}, "filepath": "./"}'`
-    * Response: No Response
+    * Response: `{"status": "success"}`
 
 ### Dashboard
 

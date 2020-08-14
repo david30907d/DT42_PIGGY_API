@@ -24,6 +24,7 @@ class PiggyResource:
         with open(Path(req.media["filepath"]).joinpath("settings.json"), "w") as file:
             json.dump(req.media["payload"], file)
         resp.status = falcon.HTTP_201
+        resp.media = {'status': 'success'}
 
 class DashBoardResource:
     """
