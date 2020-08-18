@@ -21,7 +21,10 @@ class PiggyResource:
         """
         save user's payload into settings.json according to privided path
         """
-        with open(Path(req.media["filepath"]).joinpath("settings.json"), "w") as file:
+        destination = Path(req.media["filepath"])
+        if not destination.exists():
+            destination.mkdir(parents=True, exist_ok=True)
+        with open(destination.joinpath("settings.json"), "w") as file:
             json.dump(req.media["payload"], file)
         resp.status = falcon.HTTP_201
         resp.media = {'status': 'success'}
