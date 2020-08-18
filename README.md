@@ -17,7 +17,11 @@ This API would connect MySQL and BerryNet inference with Dashboard.
 1. Docker-compose version: `docker-compose up`
 2. Without docker-compose:
     1. Run a MySQL container in local env: `docker run --name mysql -e MYSQL_ROOT_PASSWORD=mysql --rm -it -p 3306:3306 mysql:8.0.20`
-    2. Run your Falcon app in local env: `gunicorn -b 127.0.0.1:9000 project.app`
+    2. Run your Falcon app in local env:
+        1. Without Docker
+            * `export STAGING=True`
+            * `gunicorn -b 127.0.0.1:9000 project.app`
+        2. Using Docker: `docker run --rm -it -p 8000:8000 dt42_piggy_api_api`
 
 ## API
 
