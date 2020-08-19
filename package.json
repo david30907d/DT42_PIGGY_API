@@ -18,8 +18,8 @@
     "**/*.py": [
       "pytest --cov=project --cov-report=term-missing tests",
       "isort -rc -y -ac -ls",
-      "black",
       "pylint",
+      "black",
       "mypy --ignore-missing-imports",
       "bandit",
       "git add"

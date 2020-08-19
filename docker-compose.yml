@@ -14,5 +14,7 @@ services:
         restart: always
         depends_on:
             - mysql
+        environment:
+            - MYSQL_SERVICE_HOST=mysql
         ports:
             - "8000:8000"
