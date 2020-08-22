@@ -2,8 +2,10 @@
 some comment
 """
 import json
+import time
 from pathlib import Path
 
+import cv2
 import falcon
 
 
@@ -52,3 +54,31 @@ class DashBoardResource:
             ]
             result.append(payload)
         resp.media = result
+
+
+class VideoResource:
+    """
+    Resource of video stream
+    """
+
+    def on_get(self, _, resp):
+        # labeled_frame = self._get_frame(VideoStream(src=0, usePiCamera=True).start())
+        labeled_frame = self._get_frame(None)
+        resp.content_type = "multipart/x-mixed-replace; boundary=frame"
+        resp.stream = labeled_frame
+
+    def _get_frame(self, camera, fps=1 / 100000):
+        frame_count = 0
+        time.sleep(2)
+        while True:
+            if frame_count % 1 / fps == 0:
+                # image = camera.read()
+                camera = "This variable should be replaced in PROD"
+                print(camera)
+                image = cv2.imread("fixtures/demo.jpg")
+                _, jpeg = cv2.imencode(".jpg", image)
+                yield (
+                    b"--frame\r\n"
+                    b"Content-Type: image/jpeg\r\n\r\n" + jpeg.tobytes() + b"\r\n\r\n"
+                )
+            frame_count += 1
