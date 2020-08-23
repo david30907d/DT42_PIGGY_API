@@ -4,9 +4,12 @@ some comment
 import json
 import time
 from pathlib import Path
+from datetime import datetime
 
 import cv2
 import falcon
+
+from config.config import LOCATION
 
 
 class PiggyResource:
@@ -67,18 +70,26 @@ class VideoResource:
         resp.content_type = "multipart/x-mixed-replace; boundary=frame"
         resp.stream = labeled_frame
 
-    def _get_frame(self, camera, fps=1 / 100000):
-        frame_count = 0
+    def _get_frame(self, camera, frame_count_threshold=1000000):
+        # wait for camera resource to be ready
         time.sleep(2)
+
+        frame_count = 0
+        start = datetime.now()
         while True:
-            if frame_count % 1 / fps == 0:
-                # image = camera.read()
-                camera = "This variable should be replaced in PROD"
-                print(camera)
-                image = cv2.imread("fixtures/demo.jpg")
+            if frame_count % frame_count_threshold == 0:
+                if LOCATION == "GITHUB":
+                    camera = "This variable should be replaced in PROD"
+                    image = cv2.imread("fixtures/demo.jpg")
+                else:
+                    image = camera.read()
                 _, jpeg = cv2.imencode(".jpg", image)
                 yield (
                     b"--frame\r\n"
                     b"Content-Type: image/jpeg\r\n\r\n" + jpeg.tobytes() + b"\r\n\r\n"
                 )
+                print(
+                    f"fps: {frame_count/(datetime.now() - start).microseconds*1000000}"
+                )
+                start = datetime.now()
             frame_count += 1
