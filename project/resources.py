@@ -5,7 +5,7 @@ import json
 import time
 from pathlib import Path
 from datetime import datetime
-
+from imutils.video import VideoStream
 import cv2
 import falcon
 
@@ -65,31 +65,21 @@ class VideoResource:
     """
 
     def on_get(self, _, resp):
-        # labeled_frame = self._get_frame(VideoStream(src=0, usePiCamera=True).start())
-        labeled_frame = self._get_frame(None)
+        labeled_frame = self._get_frame(VideoStream(src=0, usePiCamera=True).start())
         resp.content_type = "multipart/x-mixed-replace; boundary=frame"
         resp.stream = labeled_frame
 
-    def _get_frame(self, camera, frame_count_threshold=1000000):
+    def _get_frame(self, camera, frame_count_threshold=50000):
         # wait for camera resource to be ready
         time.sleep(2)
 
         frame_count = 0
-        start = datetime.now()
         while True:
             if frame_count % frame_count_threshold == 0:
-                if LOCATION == "GITHUB":
-                    camera = "This variable should be replaced in PROD"
-                    image = cv2.imread("fixtures/demo.jpg")
-                else:
-                    image = camera.read()
+                image = camera.read()
                 _, jpeg = cv2.imencode(".jpg", image)
                 yield (
                     b"--frame\r\n"
                     b"Content-Type: image/jpeg\r\n\r\n" + jpeg.tobytes() + b"\r\n\r\n"
                 )
-                print(
-                    f"fps: {frame_count/(datetime.now() - start).microseconds*1000000}"
-                )
-                start = datetime.now()
             frame_count += 1
