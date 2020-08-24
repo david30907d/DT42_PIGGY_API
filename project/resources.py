@@ -4,12 +4,22 @@ some comment
 import json
 import time
 from pathlib import Path
-from datetime import datetime
-from imutils.video import VideoStream
+
 import cv2
 import falcon
+from marshmallow import fields
+from webargs.falconparser import use_args
 
-from config.config import LOCATION
+from dt42lab.core import tools
+from trainer.pipelines import pipeline as dt42pl
+
+PIPELINE = dt42pl.Pipeline(
+    "config/demo.config",
+    trainer_config_path="",
+    parent_result_folder="",
+    verbosity=0,
+    lab_flag=False,
+)
 
 
 class PiggyResource:
@@ -64,20 +74,32 @@ class VideoResource:
     Resource of video stream
     """
 
-    def on_get(self, _, resp):
-        labeled_frame = self._get_frame(VideoStream(src=0, usePiCamera=True).start())
+    argmap = {"cameraId": fields.Str()}
+
+    @use_args(argmap, location="query")
+    def on_get(self, _, resp, args):
+        settings_json = Path(args["cameraId"]) / "settings.json"
+        camera_src = json.loads(settings_json.read_text())["Source"]
+        labeled_frame = self._get_frame(cv2.VideoCapture(camera_src["Source"]))
         resp.content_type = "multipart/x-mixed-replace; boundary=frame"
         resp.stream = labeled_frame
 
-    def _get_frame(self, camera, frame_count_threshold=50000):
+    def _get_frame(self, camera, frame_count_threshold=5000):
         # wait for camera resource to be ready
         time.sleep(2)
-
+        ext_meta = tools.parse_json("config/meta.json", "utf-8")
+        camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
+        camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
+        fps = camera.get(cv2.CAP_PROP_FPS)
         frame_count = 0
+        print(f"FPS: {fps/frame_count_threshold}")
         while True:
             if frame_count % frame_count_threshold == 0:
-                image = camera.read()
-                _, jpeg = cv2.imencode(".jpg", image)
+                _, frame = camera.read()
+                PIPELINE.run(
+                    frame, external_meta=ext_meta, benchmark=False,
+                )
+                _, jpeg = cv2.imencode(".jpg", PIPELINE.output[0])
                 yield (
                     b"--frame\r\n"
                     b"Content-Type: image/jpeg\r\n\r\n" + jpeg.tobytes() + b"\r\n\r\n"

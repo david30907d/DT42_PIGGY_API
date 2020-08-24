@@ -19,7 +19,7 @@
       "pytest --cov=project --cov-report=term-missing tests",
       "isort -rc -y -ac -ls",
       "black",
-      "pylint --generated-members=imencode,imread",
+      "pylint --generated-members=imencode,imread,CAP_PROP_FPS",
       "mypy --ignore-missing-imports",
       "bandit",
       "git add"
