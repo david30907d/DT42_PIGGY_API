@@ -80,7 +80,9 @@ class VideoResource:
     def on_get(self, _, resp, args):
         settings_json = Path(args["cameraId"]) / "settings.json"
         camera_src = json.loads(settings_json.read_text())["Source"]
-        labeled_frame = self._get_frame(cv2.VideoCapture(camera_src["Source"]))
+        if camera_src.isnumeric():
+            camera_src = int(camera_src)
+        labeled_frame = self._get_frame(cv2.VideoCapture(camera_src))
         resp.content_type = "multipart/x-mixed-replace; boundary=frame"
         resp.stream = labeled_frame
 
