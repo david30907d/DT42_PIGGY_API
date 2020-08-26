@@ -1,0 +1,22 @@
+name: test mysql service container
+
+on:
+  push:
+    branches: [ master ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    services:
+      mysql:
+        image: mysql:8.0.20
+        env:
+          MYSQL_ROOT_PASSWORD: mysql
+        ports:
+          - 3306:3306
+        options: --health-cmd="mysqladmin ping" --health-interval=5s --health-timeout=2s --health-retries=3
+
+    steps:
+    - name: Run test
+      run: |
+        mysql --host 127.0.0.1 --port 3306 -uroot -pmysql -e "SHOW DATABASES"
