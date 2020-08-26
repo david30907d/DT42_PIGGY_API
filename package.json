@@ -23,9 +23,6 @@
       "mypy --ignore-missing-imports",
       "bandit",
       "git add"
-    ],
-    "**/Dockerfile*": [
-      "hadolint"
     ]
   },
   "repository": {

@@ -49,22 +49,11 @@ jobs:
 
     - name: Run test
       run: |
-        # Because the malfunction of MySQL in Github action
-        # We're commenting these mysql setup process for now!
-        # mysql -u root --password=mysql -D mysql -e "source fixtures/stored_procedures.sql"
-        # mysql -u root --password=mysql -D mysql -e "source fixtures/init.sql"
-
         # Docker-compose version
-        # docker-compose exec mysql sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/stored_procedures.sql"'
-        # docker-compose exec mysql sh -c 'mysql -u root --password=mysql -D mysql -e "source /tmp/init.sql"'
-        # docker-compose exec api sh -c "pip install pytest; pytest"
-
-        python -m pip install --upgrade pip
-        pip install git+https://${{ secrets.USERNAME }}:${{ secrets.CREDENTIAL }}@github.com/dt42-ai-solution/dt42-lab-lib.git
-        pip install git+https://${{ secrets.USERNAME }}:${{ secrets.CREDENTIAL }}@github.com/dt42-ai-solution/dt42-trainer.git
-        pip install poetry
-        poetry install
-        pytest
+        docker-compose up -d
+        docker-compose exec postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
+        docker-compose exec postgres sh -c 'psql -U postgres -f /tmp/init.sql'
+        docker-compose exec api sh -c "pip install pytest; pytest"
 
     - name: Push Cache to docker registry
       uses: actions-hub/docker@master
