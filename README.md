@@ -1,6 +1,6 @@
 # DT42 Piggy API ![Docker Image CI](https://github.com/david30907d/DT42_PIGGY_API/workflows/Docker%20Image%20CI/badge.svg)
 
-This API would connect MySQL and BerryNet inference with Dashboard.
+This API would connect PostgreSQL and BerryNet inference with Dashboard.
 
 ## Install
 
@@ -16,7 +16,7 @@ This API would connect MySQL and BerryNet inference with Dashboard.
 
 1. Docker-compose version: `docker-compose up`
 2. Without docker-compose:
-    1. Run a MySQL container in local env: `docker run --name mysql -e MYSQL_ROOT_PASSWORD=mysql --rm -it -p 3306:3306 mysql:8.0.20`
+    1. Run a PostgreSQL container in local env: `docker run --rm --name postgres -it -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v $(pwd)/fixtures:/tmp postgres:11.9`
     2. Run your Falcon app in local env:
         1. Without Docker
             * `export STAGING=True`
@@ -47,6 +47,12 @@ This API would connect MySQL and BerryNet inference with Dashboard.
         }
     ]
     ```
+
+### Dashboard
+
+* Get records for dashboard: `curl -XGET localhost:<port>/videofeed`
+    * Response: stream of image encoding
+
 ## Test
 
 Please check [.github/workflows/dockerimage.yml](.github/workflows/dockerimage.yml) for details
