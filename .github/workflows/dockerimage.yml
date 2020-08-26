@@ -50,7 +50,7 @@ jobs:
     - name: Run test
       run: |
         # Docker-compose version
-        docker-compose up --build-arg username=${{ secrets.USERNAME }} --build-arg credential=${{ secrets.CREDENTIAL }} -d
+        docker-compose up -d
         docker-compose exec postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
         docker-compose exec postgres sh -c 'psql -U postgres -f /tmp/init.sql'
         docker-compose exec api sh -c "pip install pytest; pytest"
