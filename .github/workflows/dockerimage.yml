@@ -60,6 +60,8 @@ jobs:
         # docker-compose exec api sh -c "pip install pytest; pytest"
 
         python -m pip install --upgrade pip
+        pip install git+https://${{ secrets.USERNAME }}:${{ secrets.CREDENTIAL }}@github.com/dt42-ai-solution/dt42-lab-lib.git
+        pip install git+https://${{ secrets.USERNAME }}:${{ secrets.CREDENTIAL }}@github.com/dt42-ai-solution/dt42-trainer.git
         pip install poetry
         poetry install
         pytest
