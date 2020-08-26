@@ -19,4 +19,6 @@ jobs:
     steps:
     - name: Run test
       run: |
-        mysql --host 127.0.0.1 --port 3306 -uroot -pmysql -e "SHOW DATABASES"
+        mysql --host 127.0.0.1 --port 3306 -u root -p mysql -e "SHOW DATABASES"
+        mysql -u root --password=mysql -D mysql -e "source fixtures/stored_procedures.sql"
+        mysql -u root --password=mysql -D mysql -e "source fixtures/init.sql"
