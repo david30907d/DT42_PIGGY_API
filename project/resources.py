@@ -7,10 +7,13 @@ from pathlib import Path
 
 import cv2
 import falcon
+import requests
 from marshmallow import fields
 from webargs.falconparser import use_args
 
 from dt42lab.core import tools
+from config.config import LINE_TOKEN
+from project.utils import line_notify_message
 from trainer.pipelines import pipeline as dt42pl
 
 PIPELINE = dt42pl.Pipeline(
@@ -20,6 +23,7 @@ PIPELINE = dt42pl.Pipeline(
     verbosity=0,
     lab_flag=False,
 )
+SESS = requests.session()
 
 
 class PiggyResource:
@@ -78,15 +82,22 @@ class VideoResource:
 
     @use_args(argmap, location="query")
     def on_get(self, _, resp, args):
-        settings_json = Path(args["cameraId"]) / "settings.json"
-        camera_src = json.loads(settings_json.read_text())["Source"]
-        if camera_src.isnumeric():
-            camera_src = int(camera_src)
+        line_notify_message(SESS, LINE_TOKEN, "from falcon XDD")
+        camera_src = self._get_camera_src(args)
         labeled_frame = self._get_frame(cv2.VideoCapture(camera_src))
         resp.content_type = "multipart/x-mixed-replace; boundary=frame"
         resp.stream = labeled_frame
 
-    def _get_frame(self, camera, frame_count_threshold=5000):
+    @staticmethod
+    def _get_camera_src(args):
+        settings_json = Path(args["cameraId"]) / "settings.json"
+        camera_src = json.loads(settings_json.read_text())["Source"]
+        if camera_src.isnumeric():
+            camera_src = int(camera_src)
+        return camera_src
+
+    @staticmethod
+    def _get_frame(camera, frame_count_threshold=5000):
         # wait for camera resource to be ready
         time.sleep(2)
         ext_meta = tools.parse_json("config/meta.json", "utf-8")

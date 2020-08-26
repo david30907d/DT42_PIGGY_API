@@ -51,9 +51,9 @@ jobs:
       run: |
         # Docker-compose version
         docker-compose up -d
-        docker-compose exec postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
-        docker-compose exec postgres sh -c 'psql -U postgres -f /tmp/init.sql'
-        docker-compose exec api sh -c "pip install pytest; pytest"
+        docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
+        docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/init.sql'
+        docker-compose exec -T api sh -c "pip install pytest; pytest"
 
     - name: Push Cache to docker registry
       uses: actions-hub/docker@master

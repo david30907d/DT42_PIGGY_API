@@ -1,5 +1,6 @@
 # project stuff
 settings.json
+env.sh
 
 # npm stuff
 node_modules/

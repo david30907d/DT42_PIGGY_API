@@ -6,3 +6,4 @@ import os
 from config import dev, prod
 
 LOCATION = globals()[os.getenv("LOCATION", "dev")].LOCATION
+LINE_TOKEN = os.getenv("LINE_TOKEN", "")
