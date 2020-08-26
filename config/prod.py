@@ -1,4 +1,11 @@
 """
 config of prod
 """
-LOCATION = "RaspberryPi"
+from trainer.pipelines import pipeline as dt42pl
+PIPELINE = dt42pl.Pipeline(
+    "config/demo.config",
+    trainer_config_path="",
+    parent_result_folder="",
+    verbosity=0,
+    lab_flag=False,
+)

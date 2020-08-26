@@ -10,6 +10,8 @@ services:
     api:
         image: davidtnfsh/dt42_piggy_api:cache
         restart: always
+        environment:
+            - LOCATION=dev
         depends_on:
             - postgres
         ports:

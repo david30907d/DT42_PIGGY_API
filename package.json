@@ -15,7 +15,7 @@
     }
   },
   "lint-staged": {
-    "**/*.py": [
+    "project/*.py": [
       "pytest --cov=project --cov-report=term-missing tests",
       "isort -rc -y -ac -ls",
       "black",

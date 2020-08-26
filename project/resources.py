@@ -12,17 +12,9 @@ from marshmallow import fields
 from webargs.falconparser import use_args
 
 from dt42lab.core import tools
-from config.config import LINE_TOKEN
+from config.config import PIPELINE, LINE_TOKEN
 from project.utils import line_notify_message
-from trainer.pipelines import pipeline as dt42pl
 
-PIPELINE = dt42pl.Pipeline(
-    "config/demo.config",
-    trainer_config_path="",
-    parent_result_folder="",
-    verbosity=0,
-    lab_flag=False,
-)
 SESS = requests.session()
 
 
