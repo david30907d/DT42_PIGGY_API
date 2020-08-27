@@ -3,10 +3,11 @@ entrypoint of config
 """
 import os
 # Config according to location
-if os.getenv('LOCATION') == 'dev':
-    from config.dev import PIPELINE, EMAIL_OF_RECEIVER, EMAIL_OF_SENDER
+LOCATION = os.getenv('LOCATION')
+if LOCATION == 'dev':
+    from config.dev import PIPELINE, EMAIL_OF_RECEIVER, EMAIL_OF_SENDER, KAFKA_CONFIG
 else:
-    from config.prod import PIPELINE, EMAIL_OF_RECEIVER, EMAIL_OF_SENDER
+    from config.prod import PIPELINE, EMAIL_OF_RECEIVER, EMAIL_OF_SENDER, KAFKA_CONFIG
 
 # Shared Config
 LINE_TOKEN = os.getenv("LINE_TOKEN", "")

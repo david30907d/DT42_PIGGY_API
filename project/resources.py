@@ -13,9 +13,11 @@ from webargs.falconparser import use_args
 
 from dt42lab.core import tools
 from config.config import (
+    LOCATION,
     PIPELINE,
     LINE_TOKEN,
     GMAIL_TOKEN,
+    KAFKA_CONFIG,
     EMAIL_OF_SENDER,
     EMAIL_OF_RECEIVER,
 )
@@ -83,9 +85,11 @@ class VideoResource:
         notify_line_message(SESS, LINE_TOKEN, "from falcon XDD")
         send_gmail("TITLE", EMAIL_OF_SENDER, EMAIL_OF_RECEIVER, "CONTENT", GMAIL_TOKEN)
         camera_src = self._get_camera_src(args)
-        labeled_frame = self._get_frame(cv2.VideoCapture(camera_src))
+        labeled_image_bytes = self._get_image_bytes(
+            cv2.VideoCapture(camera_src), camera_id=args["cameraId"]
+        )
         resp.content_type = "multipart/x-mixed-replace; boundary=frame"
-        resp.stream = labeled_frame
+        resp.stream = labeled_image_bytes
 
     @staticmethod
     def _get_camera_src(args):
@@ -95,25 +99,54 @@ class VideoResource:
             camera_src = int(camera_src)
         return camera_src
 
-    @staticmethod
-    def _get_frame(camera, frame_count_threshold=5000):
-        # wait for camera resource to be ready
-        time.sleep(2)
+    @classmethod
+    def _get_image_bytes(cls, camera, camera_id, frame_count_threshold=5000):
+        frame_count = 0
+        fps = cls._get_fps(camera, frame_count_threshold)
+        print(f"FPS: {fps}")
+
+        # setup cv2 and meta for inference pipeline
         ext_meta = tools.parse_json("config/meta.json", "utf-8")
         camera.set(cv2.CAP_PROP_FRAME_WIDTH, 1920)
         camera.set(cv2.CAP_PROP_FRAME_HEIGHT, 1080)
-        fps = camera.get(cv2.CAP_PROP_FPS)
-        frame_count = 0
-        print(f"FPS: {fps/frame_count_threshold}")
+
+        # wait for camera resource to be ready
+        time.sleep(2)
+
         while True:
             if frame_count % frame_count_threshold == 0:
-                _, frame = camera.read()
-                PIPELINE.run(
-                    frame, external_meta=ext_meta, benchmark=False,
-                )
-                _, jpeg = cv2.imencode(".jpg", PIPELINE.output[0])
+                frame = cls._get_frame_from_camera(camera)
+                jpeg = cls._inference(frame, ext_meta)
+                cls._publish_result_2_kafka(camera_id)
+
                 yield (
                     b"--frame\r\n"
                     b"Content-Type: image/jpeg\r\n\r\n" + jpeg.tobytes() + b"\r\n\r\n"
                 )
             frame_count += 1
+
+    @staticmethod
+    def _get_fps(camera, frame_count_threshold) -> float:
+        fps = camera.get(cv2.CAP_PROP_FPS)
+        return fps / frame_count_threshold
+
+    @staticmethod
+    def _get_frame_from_camera(camera):
+        if LOCATION == "dev":
+            return cv2.imread("fixtures/demo.jpg")
+        _, frame = camera.read()
+        return frame
+
+    @staticmethod
+    def _inference(frame, ext_meta):
+        PIPELINE.run(
+            frame, external_meta=ext_meta, benchmark=False,
+        )
+        _, jpeg = cv2.imencode(".jpg", PIPELINE.output[0])
+        return jpeg
+
+    @staticmethod
+    def _publish_result_2_kafka(camera_id):
+        KAFKA_CONFIG["producer"].send(
+            "camera", key=camera_id.encode("utf-8"), value="32233311"
+        )
