@@ -12,8 +12,14 @@ from marshmallow import fields
 from webargs.falconparser import use_args
 
 from dt42lab.core import tools
-from config.config import PIPELINE, LINE_TOKEN
-from project.utils import line_notify_message
+from config.config import (
+    PIPELINE,
+    LINE_TOKEN,
+    GMAIL_TOKEN,
+    EMAIL_OF_SENDER,
+    EMAIL_OF_RECEIVER,
+)
+from project.utils import send_gmail, notify_line_message
 
 SESS = requests.session()
 
@@ -74,7 +80,8 @@ class VideoResource:
 
     @use_args(argmap, location="query")
     def on_get(self, _, resp, args):
-        line_notify_message(SESS, LINE_TOKEN, "from falcon XDD")
+        notify_line_message(SESS, LINE_TOKEN, "from falcon XDD")
+        send_gmail("TITLE", EMAIL_OF_SENDER, EMAIL_OF_RECEIVER, "CONTENT", GMAIL_TOKEN)
         camera_src = self._get_camera_src(args)
         labeled_frame = self._get_frame(cv2.VideoCapture(camera_src))
         resp.content_type = "multipart/x-mixed-replace; boundary=frame"

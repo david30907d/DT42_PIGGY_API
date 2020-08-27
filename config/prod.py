@@ -9,3 +9,5 @@ PIPELINE = dt42pl.Pipeline(
     verbosity=0,
     lab_flag=False,
 )
+EMAIL_OF_SENDER = ''
+EMAIL_OF_RECEIVER = ''

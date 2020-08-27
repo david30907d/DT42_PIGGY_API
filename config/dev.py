@@ -9,3 +9,5 @@ class Pipeline():
         pass
 
 PIPELINE = Pipeline()
+EMAIL_OF_SENDER = 'davidtnfsh.dt42@gmail.com'
+EMAIL_OF_RECEIVER = 'davidtnfsh.dt42@gmail.com'
