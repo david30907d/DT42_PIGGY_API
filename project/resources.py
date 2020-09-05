@@ -148,5 +148,5 @@ class VideoResource:
     @staticmethod
     def _publish_result_2_kafka(camera_id):
         KAFKA_CONFIG["producer"].send(
-            "camera", key=camera_id.encode("utf-8"), value="32233311"
+            "camera", key=camera_id.encode("utf-8"), value={"333": "$443543"}
         )
