@@ -14,13 +14,13 @@ jobs:
   build:
 
     runs-on: ubuntu-16.04
-    services:
-      mysql:
-        image: mysql:8.0.20
-        env:
-          MYSQL_ROOT_PASSWORD: mysql
-        ports:
-        - 3306:3306
+    # services:
+    #   mysql:
+    #     image: postgres:11.9
+    #     env:
+    #       POSTGRES_PASSWORD: postgres
+    #     ports:
+    #     - 5432:5432
 
     steps:
     - uses: actions/checkout@v2

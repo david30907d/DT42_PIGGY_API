@@ -1,6 +1,7 @@
 # project stuff
 settings.json
-env.sh
+.env.sh
+.metals/
 
 # npm stuff
 node_modules/
