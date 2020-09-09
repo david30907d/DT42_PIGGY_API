@@ -39,9 +39,16 @@ jobs:
         docker login -u ${{ secrets.DOCKER_USERNAME }} -p ${{ secrets.DOCKER_PASSWORD }}
         docker pull ${RC_NAME}:cache
 
+    - name: Run Kafka service
+      run: |
+        git clone --recursive https://github.com/david30907d/dt42-piggy-kafka.git
+        cd dt42-piggy-kafka
+        docker-compose up -d
+
     - name: Build the Docker image
       if: always()
       run: |
+        ls -al
         docker build -t ${RC_NAME}:${GITHUB_SHA}  --build-arg username=${{ secrets.USERNAME }} --build-arg credential=${{ secrets.CREDENTIAL }} --cache-from ${RC_NAME}:cache .
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:cache
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:staging

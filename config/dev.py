@@ -14,7 +14,7 @@ PIPELINE = Pipeline()
 EMAIL_OF_SENDER = 'davidtnfsh.dt42@gmail.com'
 EMAIL_OF_RECEIVER = 'davidtnfsh.dt42@gmail.com'
 KAFKA_CONFIG = {
-    "producer": KafkaProducer(bootstrap_servers=['localhost:9092'],
+    "producer": KafkaProducer(bootstrap_servers=['host.docker.internal:9092'],
                          value_serializer=lambda x: 
                          json.dumps(x).encode('utf-8'))
 }
