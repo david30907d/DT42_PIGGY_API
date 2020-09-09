@@ -10,20 +10,23 @@ RUN apt-get update \
     # 1. if you don't need postgres, remember to remove postgresql-dev and sqlalchemy
     # 2. libglib2.0-0 libsm6 libxext6 libxrender-dev libgl1-mesa-dev are required by opencv
     # 3. git is required by pip install git+https
-    && pip install --no-cache-dir poetry==1.0.5
+    && pip install --no-cache-dir poetry==1.0.5 \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/* \
 
 WORKDIR /app
 COPY pyproject.toml pyproject.toml
 COPY poetry.lock poetry.lock
-RUN pip install git+https://${username}:${credential}@github.com/dt42-ai-solution/dt42-lab-lib.git \
-    && pip install git+https://${username}:${credential}@github.com/dt42-ai-solution/dt42-trainer.git \
+RUN git clone git+https://${username}:${credential}@github.com/dt42-ai-solution/dt42-lab-lib.git \
+    && python dt42-lab-lib/setup.py install \
+    && git clone git+https://${username}:${credential}@github.com/dt42-ai-solution/dt42-trainer.git \
+    && python dt42-trainer/setup.py install \
     # [WORKAROUND] pip install scipy
     && pip install scipy \
     && poetry install --no-interaction --no-ansi --no-dev \
     # Cleaning poetry installation's cache for production:
     && rm -rf "$POETRY_CACHE_DIR" \
     && apt-get remove --auto-remove --purge -y gcc g++ git \
-    && apt-get clean \
     && pip uninstall -yq poetry
 
 COPY project project
