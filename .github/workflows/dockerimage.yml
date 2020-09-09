@@ -10,18 +10,8 @@ env:
   POETRY_VIRTUALENVS_CREATE: false
 
 jobs:
-
   build:
-
     runs-on: ubuntu-16.04
-    # services:
-    #   mysql:
-    #     image: postgres:11.9
-    #     env:
-    #       POSTGRES_PASSWORD: postgres
-    #     ports:
-    #     - 5432:5432
-
     steps:
     - uses: actions/checkout@v2
     - name: Set up Python 3.7
@@ -41,9 +31,7 @@ jobs:
 
     - name: Run Kafka service
       run: |
-        git clone --recursive https://github.com/david30907d/dt42-piggy-kafka.git
-        cd dt42-piggy-kafka
-        docker-compose up -d
+        git clone --recursive https://github.com/david30907d/dt42-piggy-kafka.git; cd dt42-piggy-kafka; docker-compose up -d
 
     - name: Build the Docker image
       if: always()
@@ -56,10 +44,10 @@ jobs:
 
     - name: Run test
       run: |
-        # Docker-compose version
         docker-compose up -d
         docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
         docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/init.sql'
+        # This test would raise "Process completed with exit code 137." because of memory limitation
         # docker-compose exec -T api sh -c "pip install pytest; pytest"
 
     - name: Push Cache to docker registry
