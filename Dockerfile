@@ -17,9 +17,9 @@ RUN apt-get update \
 WORKDIR /app
 COPY pyproject.toml pyproject.toml
 COPY poetry.lock poetry.lock
-RUN git clone git+https://${username}:${credential}@github.com/dt42-ai-solution/dt42-lab-lib.git \
+RUN git clone https://${username}:${credential}@github.com/dt42-ai-solution/dt42-lab-lib.git \
     && python dt42-lab-lib/setup.py install \
-    && git clone git+https://${username}:${credential}@github.com/dt42-ai-solution/dt42-trainer.git \
+    && git clone https://${username}:${credential}@github.com/dt42-ai-solution/dt42-trainer.git \
     && python dt42-trainer/setup.py install \
     # [WORKAROUND] pip install scipy
     && pip install scipy \
