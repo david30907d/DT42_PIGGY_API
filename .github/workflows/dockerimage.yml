@@ -31,7 +31,7 @@ jobs:
 
     - name: Run Kafka service
       run: |
-        git clone --recursive https://github.com/david30907d/dt42-piggy-kafka.git; cd dt42-piggy-kafka; docker-compose -f docker-compose.test.yml up -d
+        git clone --recursive https://github.com/david30907d/dt42-piggy-kafka.git; cd dt42-piggy-kafka; docker-compose up -d
 
     - name: Build the Docker image
       if: always()
@@ -44,7 +44,7 @@ jobs:
 
     - name: Run test
       run: |
-        docker-compose up -d
+        docker-compose -f docker-compose.test.yml up -d
         docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
         docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/init.sql'
         # This test would raise "Process completed with exit code 137." because of memory limitation
