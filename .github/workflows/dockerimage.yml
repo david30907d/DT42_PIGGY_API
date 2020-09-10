@@ -31,7 +31,7 @@ jobs:
 
     - name: Run Kafka service
       run: |
-        git clone --recursive https://github.com/david30907d/dt42-piggy-kafka.git; cd dt42-piggy-kafka; docker-compose up -d
+        git clone --recursive https://github.com/david30907d/dt42-piggy-kafka.git; cd dt42-piggy-kafka; docker-compose -f docker-compose.test.yml up -d
 
     - name: Build the Docker image
       if: always()
