@@ -14,7 +14,7 @@ PIPELINE = dt42pl.Pipeline(
 EMAIL_OF_SENDER = ''
 EMAIL_OF_RECEIVER = ''
 KAFKA_CONFIG = {
-    "producer": KafkaProducer(bootstrap_servers=['localhost:9092'],
+    "producer": KafkaProducer(bootstrap_servers=['host.docker.internal:9092', '172.17.0.1:9092'],
                          value_serializer=lambda x: 
                          json.dumps(x).encode('utf-8'))
 }
