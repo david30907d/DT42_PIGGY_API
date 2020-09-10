@@ -67,7 +67,7 @@ class DashBoardResource:
             payload = dict(zip(keys, value))
             payload["TIMESTAMP"] = str(payload["TIMESTAMP"])
             payload["ANNOTATIONS"] = [
-                annotation["label"] for annotation in json.loads(payload["ANNOTATIONS"])
+                annotation["label"] for annotation in payload["ANNOTATIONS"]
             ]
             result.append(payload)
         resp.media = result
