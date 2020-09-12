@@ -62,6 +62,11 @@ This API would connect PostgreSQL and BerryNet inference with Dashboard.
 
 Please check [.github/workflows/dockerimage.yml](.github/workflows/dockerimage.yml) for details
 
+## Deploy
+
+1. Get line notify token and assign to `LINE_TOKEN` in `docker-compose.yml`
+2. Get Gmail application password and assign it to `GMAIL_TOKEN` in `docker-compose.yml`
+
 ## Built with
 
 ![falcon](https://19yw4b240vb03ws8qm25h366-wpengine.netdna-ssl.com/wp-content/uploads/falcon-framework-180x120.jpg)

@@ -34,8 +34,6 @@ RUN python setup.py install
 WORKDIR /app
 RUN rm -rf dt42-lab-lib \
     && rm -rf dt42-trainer \
-    # [WORKAROUND] pip install scipy
-    && pip install scipy \
     && poetry install --no-interaction --no-ansi --no-dev \
     # Cleaning poetry installation's cache for production:
     && rm -rf "$POETRY_CACHE_DIR" \
