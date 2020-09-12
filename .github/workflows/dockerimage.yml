@@ -36,7 +36,6 @@ jobs:
     - name: Build the Docker image
       if: always()
       run: |
-        ls -al
         docker build -t ${RC_NAME}:${GITHUB_SHA}  --build-arg username=${{ secrets.USERNAME }} --build-arg credential=${{ secrets.CREDENTIAL }} --cache-from ${RC_NAME}:cache .
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:cache
         docker tag ${RC_NAME}:${GITHUB_SHA} ${RC_NAME}:staging
@@ -49,6 +48,11 @@ jobs:
         docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/init.sql'
         # This test would raise "Process completed with exit code 137." because of memory limitation
         # docker-compose exec -T api sh -c "pip install pytest; pytest"
+        docker-compose down
+
+    - name: Run pytest
+      run: |
+         docker run -e LOCATION=pytest --rm ${RC_NAME}:${GITHUB_SHA} sh -c "pip install pytest; pytest"
 
     - name: Push Cache to docker registry
       uses: actions-hub/docker@master
