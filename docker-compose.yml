@@ -10,6 +10,11 @@ services:
     api:
         image: davidtnfsh/dt42_piggy_api:latest
         restart: always
+        environment:
+            - LINE_TOKEN=xxx
+            - GMAIL_TOKEN=xxx
+            - EMAIL_OF_SENDER=xxx
+            - EMAIL_OF_RECEIVER=xxx
         depends_on:
             - postgres
         ports:
