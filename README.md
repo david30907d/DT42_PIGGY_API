@@ -22,6 +22,11 @@ This API would connect PostgreSQL and BerryNet inference with Dashboard.
             * `export STAGING=True`
             * `gunicorn --threads 2 -b 127.0.0.1:8000 project.app`
         2. Using Docker: `docker run --rm -it -p 8000:8000 dt42_piggy_api_api`
+3. Create table in Database:
+    ```bash
+    docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
+    docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/init.sql'
+    ```
 
 ## API
 

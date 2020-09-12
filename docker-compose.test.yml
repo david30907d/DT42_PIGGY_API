@@ -8,13 +8,10 @@ services:
         volumes:
             - ./fixtures:/tmp
     api:
-        image: davidtnfsh/dt42_piggy_api:latest
+        image: davidtnfsh/dt42_piggy_api:cache
         restart: always
         environment:
-            - LINE_TOKEN=xxx
-            - GMAIL_TOKEN=xxx
-            - EMAIL_OF_SENDER=xxx
-            - EMAIL_OF_RECEIVER=xxx
+            - LOCATION=dev
         depends_on:
             - postgres
         ports:

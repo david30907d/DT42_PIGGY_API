@@ -139,10 +139,11 @@ class VideoResource:
 
     @staticmethod
     def _inference(frame, ext_meta):
-        PIPELINE.run(
-            frame, external_meta=ext_meta, benchmark=False,
-        )
-        _, jpeg = cv2.imencode(".jpg", PIPELINE.output[0])
+        # PIPELINE.run(
+        #     frame, external_meta=ext_meta, benchmark=False,
+        # )
+        # print(PIPELINE.output)
+        _, jpeg = cv2.imencode(".jpg", frame)
         return jpeg
 
     @staticmethod
