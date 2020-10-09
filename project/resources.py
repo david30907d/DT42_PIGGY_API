@@ -85,7 +85,8 @@ class AuthResource:
         resp.media = {"access_token": bearer_token.decode("utf-8"), "token_type": "JWT"}
 
 
-@falcon.before(AuthResource.on_get)
+# uncomment this to check the authorization
+# @falcon.before(AuthResource.on_get)
 class PiggyResource:
     """
     A resource for SMARTAGRI INTEGRATION SERVICE CO., LTD.
@@ -110,6 +111,7 @@ class PiggyResource:
         resp.media = {"status": "success"}
 
 
+# @falcon.before(AuthResource.on_get)
 class DashBoardResource:
     """
     A resource for dashboard
@@ -133,6 +135,7 @@ class DashBoardResource:
         resp.media = result
 
 
+# @falcon.before(AuthResource.on_get)
 class VideoResource:
     """
     Resource of video stream
