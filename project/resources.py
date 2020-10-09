@@ -41,9 +41,12 @@ class AuthResource:
         For health check probes.
         """
         resp.media = {"authorized": False}
+        failed_exception = falcon.HTTPBadRequest(
+            "Unauthorized rquests", "Unauthorized rquests"
+        )
         authorization_header = req.get_header("Authorization")
         if not authorization_header:
-            return
+            raise failed_exception
         bearer_token = authorization_header.replace("Bearer ", "")
         try:
             jwt.decode(
@@ -54,11 +57,11 @@ class AuthResource:
             )
             resp.media["authorized"] = True
         except jwt.exceptions.InvalidSignatureError:
-            pass
+            raise failed_exception
         except jwt.exceptions.ExpiredSignatureError:
-            pass
+            raise failed_exception
         except jwt.exceptions.InvalidIssuerError:
-            pass
+            raise failed_exception
 
     def on_post(self, req, resp) -> None:
         """
@@ -107,7 +110,6 @@ class PiggyResource:
         resp.media = {"status": "success"}
 
 
-@falcon.before(AuthResource.on_get)
 class DashBoardResource:
     """
     A resource for dashboard
@@ -131,7 +133,6 @@ class DashBoardResource:
         resp.media = result
 
 
-@falcon.before(AuthResource.on_get)
 class VideoResource:
     """
     Resource of video stream
