@@ -19,7 +19,7 @@ This API would connect PostgreSQL and BerryNet inference with Dashboard.
     1. Run a PostgreSQL container in local env: `docker run --rm --name postgres -it -e POSTGRES_PASSWORD=postgres -p 5432:5432 -v $(pwd)/fixtures:/tmp postgres:11.9`
     2. Run your Falcon app in local env:
         1. Without Docker
-            * `export STAGING=True`
+            * `export LOCATION=dev`
             * `gunicorn --threads 2 -b 127.0.0.1:8000 project.app`
         2. Using Docker: `docker run --rm -it -p 8000:8000 dt42_piggy_api_api`
 3. Create table in Database:
@@ -30,16 +30,28 @@ This API would connect PostgreSQL and BerryNet inference with Dashboard.
 
 ## API
 
+### Auth
+Use JWT to do authentication and authorization
+
+* Get JWT: `curl -XPOST -H "Content-Type: application/json" localhost:<port>/auth -d '{"email":"davidtnfsh@gmail.com", "password": <password>}'`
+    ```json
+    {"access_token": "<your JWT>", "token_type": "JWT"}
+    ```
+* Use JWT to access other protected resources:
+    * `curl -XGET -H "Authorization: Bearer <your JWT>" locallhost:8000/<routing>`
+    ```json
+    {"authorized": true}
+    ```
 ### Settings
 
-* Health probe: `curl -XGET localhost:<port>/settings`
+* Health probe: `curl -XGET -H "Authorization: Bearer <your JWT>" localhost:<port>/settings`
     * Response: `ok`
-* Save `settings.json` as local file: `curl -XPOST -H "Content-Type: application/json" localhost:<port>/settings -d '{"payload":{"placeholder": ""}, "filepath": "./"}'`
+* Save `settings.json` as local file: `curl -XPOST -H "Authorization: Bearer <your JWT>" -H "Content-Type: application/json" localhost:<port>/settings -d '{"payload":{"placeholder": ""}, "filepath": "./"}'`
     * Response: `{"status": "success"}`
 
 ### Dashboard
 
-* Get records for dashboard: `curl -XGET localhost:<port>/dashboard`
+* Get records for dashboard: `curl -XGET -H "Authorization: Bearer <your JWT>" localhost:<port>/dashboard`
     * Response:
     ```json
     [
@@ -53,9 +65,9 @@ This API would connect PostgreSQL and BerryNet inference with Dashboard.
     ]
     ```
 
-### Dashboard
+### VideoFeed
 
-* Get records for dashboard: `curl -XGET localhost:<port>/videofeed`
+* Get records for dashboard: `curl -XGET -H "Authorization: Bearer <your JWT>" localhost:<port>/videofeed`
     * Response: stream of image encoding
 
 ## Test

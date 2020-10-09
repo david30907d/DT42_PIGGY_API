@@ -20,7 +20,6 @@
       "isort -rc -y -ac -ls",
       "black",
       "pylint --generated-members=imencode,imread,CAP_PROP_FPS,VideoCapture,CAP_PROP_FRAME_WIDTH,CAP_PROP_FRAME_HEIGHT",
-      "mypy --ignore-missing-imports",
       "bandit",
       "git add"
     ],

@@ -15,6 +15,7 @@ services:
             - GMAIL_TOKEN=xxx
             - EMAIL_OF_SENDER=xxx
             - EMAIL_OF_RECEIVER=xxx
+            - SECRET=xxx
         depends_on:
             - postgres
         ports:

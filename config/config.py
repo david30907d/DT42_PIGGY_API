@@ -14,3 +14,4 @@ else:
 # Shared Config
 LINE_TOKEN = os.getenv("LINE_TOKEN", "")
 GMAIL_TOKEN = os.getenv("GMAIL_TOKEN", '')
+SECRET = os.getenv('SECRET', '')

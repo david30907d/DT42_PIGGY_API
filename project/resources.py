@@ -3,9 +3,12 @@ some comment
 """
 import json
 import time
+from uuid import uuid4
 from pathlib import Path
+from datetime import datetime, timedelta
 
 import cv2
+import jwt
 import falcon
 import requests
 from marshmallow import fields
@@ -13,6 +16,7 @@ from webargs.falconparser import use_args
 
 from dt42lab.core import tools
 from config.config import (
+    SECRET,
     LOCATION,
     PIPELINE,
     LINE_TOKEN,
@@ -26,6 +30,59 @@ from project.utils import send_gmail, notify_line_message
 SESS = requests.session()
 
 
+class AuthResource:
+    """
+    A resource for authorization and authentication
+    """
+
+    @staticmethod
+    def on_get(req, resp, resource={}, params={}) -> None:
+        """
+        For health check probes.
+        """
+        resp.media = {"authorized": False}
+        authorization_header = req.get_header("Authorization")
+        if not authorization_header:
+            return
+        bearer_token = authorization_header.replace("Bearer ", "")
+        try:
+            jwt.decode(
+                bearer_token.encode("utf-8"),
+                SECRET,
+                audience="dt42_piggy_api",
+                issuer="dt42.com",
+            )
+            resp.media["authorized"] = True
+        except jwt.exceptions.InvalidSignatureError:
+            pass
+        except jwt.exceptions.ExpiredSignatureError:
+            pass
+        except jwt.exceptions.InvalidIssuerError:
+            pass
+
+    def on_post(self, req, resp) -> None:
+        """
+        save user's payload into settings.json according to privided path
+        """
+        email = req.media["email"]
+        payload = {
+            "iss": "dt42.com",
+            "sub": email,
+            "aud": "dt42_piggy_api",
+            "exp": datetime.utcnow() + timedelta(days=7),
+            "nbf": datetime.utcnow(),
+            "iat": datetime.utcnow(),
+            "jti": str(uuid4()),
+        }
+        # validate email and password
+        # some code here
+
+        bearer_token = jwt.encode(payload, SECRET, algorithm="HS256")
+        resp.status = falcon.HTTP_201
+        resp.media = {"access_token": bearer_token.decode("utf-8"), "token_type": "JWT"}
+
+
+@falcon.before(AuthResource.on_get)
 class PiggyResource:
     """
     A resource for SMARTAGRI INTEGRATION SERVICE CO., LTD.
@@ -50,6 +107,7 @@ class PiggyResource:
         resp.media = {"status": "success"}
 
 
+@falcon.before(AuthResource.on_get)
 class DashBoardResource:
     """
     A resource for dashboard
@@ -73,6 +131,7 @@ class DashBoardResource:
         resp.media = result
 
 
+@falcon.before(AuthResource.on_get)
 class VideoResource:
     """
     Resource of video stream
