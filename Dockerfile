@@ -41,6 +41,7 @@ RUN rm -rf dt42-lab-lib \
     && pip uninstall -yq poetry
 
 COPY project project
+COPY commands commands
 COPY config config
 COPY tests tests
 COPY nginx.conf /etc/nginx/nginx.conf
