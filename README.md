@@ -27,6 +27,11 @@ This API would connect PostgreSQL and BerryNet inference with Dashboard.
     docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
     docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/init.sql'
     ```
+4. Create User to login:
+    * docker-compose version:
+        1. `docker-compose exec api bash`
+        2. `python -m commands.create_user -u <email> -p`
+    * Without Docker: `python -m commands.create_user -u <email> -p`
 
 ## API
 
