@@ -3,6 +3,7 @@ some comment
 """
 import json
 import time
+import hashlib
 from uuid import uuid4
 from pathlib import Path
 from datetime import datetime, timedelta
@@ -11,6 +12,7 @@ import cv2
 import jwt
 import falcon
 import requests
+from sqlalchemy import text
 from marshmallow import fields
 from webargs.falconparser import use_args
 
@@ -68,6 +70,7 @@ class AuthResource:
         save user's payload into settings.json according to privided path
         """
         email = req.media["email"]
+        password = req.media["password"]
         payload = {
             "iss": "dt42.com",
             "sub": email,
@@ -78,11 +81,24 @@ class AuthResource:
             "jti": str(uuid4()),
         }
         # validate email and password
-        # some code here
+        password_encode = hashlib.sha256(password.encode("utf-8"))
+        password_digest = password_encode.hexdigest()
+        select_params_dict = {"email": email, "password": password_digest}
 
-        bearer_token = jwt.encode(payload, SECRET, algorithm="HS256")
-        resp.status = falcon.HTTP_201
-        resp.media = {"access_token": bearer_token.decode("utf-8"), "token_type": "JWT"}
+        ## use sqlalchemy bindparams to prevent sql injection
+        pre_sql = "select email, password from users where email = :email and password = :password"
+        bind_sql = text(pre_sql)
+        resproxy = req.context["sess"].execute(bind_sql, select_params_dict)
+        user = resproxy.fetchall()
+        if len(user) == 1:
+            bearer_token = jwt.encode(payload, SECRET, algorithm="HS256")
+            resp.status = falcon.HTTP_201
+            resp.media = {
+                "access_token": bearer_token.decode("utf-8"),
+                "token_type": "JWT",
+            }
+        else:
+            resp.media = {"access_token": "failed"}
 
 
 # uncomment this to check the authorization
