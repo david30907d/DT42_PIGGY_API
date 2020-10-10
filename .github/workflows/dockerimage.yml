@@ -46,6 +46,7 @@ jobs:
         docker-compose -f docker-compose.test.yml up -d
         docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/stored_procedures.sql'
         docker-compose exec -T postgres sh -c 'psql -U postgres -f /tmp/init.sql'
+        docker-compose exec -T api sh -c 'python -m commands.create_user -u test@gmail.com'
         # This test would raise "Process completed with exit code 137." because of memory limitation
         # docker-compose exec -T api sh -c "pip install pytest; pytest"
         docker-compose down
