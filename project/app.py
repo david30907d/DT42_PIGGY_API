@@ -14,8 +14,15 @@ from project.resources import (
 )
 from project.middleware import ConnectionManager
 
-app = application = falcon.API(middleware=[ConnectionManager(SESSION)])
+if os.getenv("LOCATION") in ("dev", "pytest"):
+    from falcon_cors import CORS
 
+    cors = CORS(allow_all_origins=True, allow_all_headers=True, allow_all_methods=True,)
+    app = application = falcon.API(
+        middleware=[ConnectionManager(SESSION), cors.middleware]
+    )
+else:
+    app = application = falcon.API(middleware=[ConnectionManager(SESSION)])
 app.add_route("/settings", PiggyResource())
 app.add_route("/dashboard", DashBoardResource())
 app.add_route("/videofeed", VideoResource())
