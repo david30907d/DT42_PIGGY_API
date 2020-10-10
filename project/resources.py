@@ -102,7 +102,7 @@ class AuthResource:
 
 
 # uncomment this to check the authorization
-@falcon.before(AuthResource.on_get)
+# @falcon.before(AuthResource.on_get)
 class PiggyResource:
     """
     A resource for SMARTAGRI INTEGRATION SERVICE CO., LTD.
