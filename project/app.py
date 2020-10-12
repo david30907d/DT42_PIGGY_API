@@ -1,8 +1,6 @@
 """
 entrypoint of falcon
 """
-import os
-
 import falcon
 
 from project.database import SESSION
