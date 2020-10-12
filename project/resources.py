@@ -101,8 +101,7 @@ class AuthResource:
             resp.media = {"access_token": "failed"}
 
 
-# uncomment this to check the authorization
-# @falcon.before(AuthResource.on_get)
+@falcon.before(AuthResource.on_get)
 class PiggyResource:
     """
     A resource for SMARTAGRI INTEGRATION SERVICE CO., LTD.
@@ -151,7 +150,6 @@ class DashBoardResource:
         resp.media = result
 
 
-@falcon.before(AuthResource.on_get)
 class VideoResource:
     """
     Resource of video stream

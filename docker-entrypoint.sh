@@ -2,6 +2,6 @@
 #!/busybox/sh -e
 
 case "$1" in
-  "server") nginx && gunicorn -b 127.0.0.1:9000 project.app ;;
+  "server") nginx && gunicorn -b 127.0.0.1:9000 --reload project.app ;;
   *) exec "$@" ;;
 esac

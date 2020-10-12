@@ -43,6 +43,7 @@ RUN rm -rf dt42-lab-lib \
 COPY project project
 COPY commands commands
 COPY config config
+COPY fixtures fixtures
 COPY tests tests
 COPY nginx.conf /etc/nginx/nginx.conf
 COPY docker-entrypoint.sh docker-entrypoint.sh
